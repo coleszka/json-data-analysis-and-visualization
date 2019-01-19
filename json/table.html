@@ -1,0 +1,186 @@
+<?php
+
+$rows=1;
+$Ex_lm=0;
+$Ex_m2=0;
+$Ex2=0;
+$d2x=0;
+$dx=0;
+$tab_m2=array();
+$tab_lm=array();
+$mediana_m2=0;
+$mediana_lm=0;
+$s_m2_tmp=0;
+$s_lm_tmp=0;
+$pearson=0;
+$xy=array();
+$x2=array();
+$y2=array();
+$sumx=0;
+$sumy=0;
+$sumxy=0;
+$sumx2=0;
+$sumy2=0;
+$regression=0;
+$regression_b=0;
+$regression_a=0;
+$regression_y=0;
+$q1_m2=0;
+$q1_lm=0;
+$q3_m2=0;
+$q3_lm=0;
+$tmp1=0;
+$tmp2=0;
+$tmp3=0;
+$sum_pow_y=0;
+
+
+
+                          $data = file_get_contents($json_file);  
+                          $data = json_decode($data, true);
+
+                     
+
+                          $max=max($data);  
+                          $min=min($data);
+
+                          foreach($data as $row)  
+                          {  
+                            
+                              
+                            $tab_m2[$rows]=$row["cena_m2"];
+                            $tab_lm[$rows]=$row["l_mieszkancow"];
+                            $rows++;
+                            
+                            $xy[$rows]=$row["cena_m2"]*$row["l_mieszkancow"];
+                            $x2[$rows]=pow($row["cena_m2"], 2);
+                            $y2[$rows]=pow($row["l_mieszkancow"], 2);
+                          }; 
+
+                          asort($tab_m2);
+                          asort($tab_lm);
+                          $max_tab_lm=max($tab_lm);
+                          $min_tab_lm=min($tab_lm);
+
+                          foreach($data as $row)  
+                          {  
+                            
+                              //cho '<tr><td>'.$row["cena_m2"].'</td><td>'.$row["l_mieszkancow"].'</td></tr>';
+                              if ($max["cena_m2"]==$row["cena_m2"]) {
+                                  $max_c2=$row["l_mieszkancow"];
+                                  }
+
+                              if ($min["cena_m2"]==$row["cena_m2"]) {
+                                    $min_c2=$row["l_mieszkancow"];
+                                  }
+
+                              if ($max_tab_lm==$row["l_mieszkancow"]) {
+                                      $max_lm=$row["cena_m2"];
+                                  }  
+                              if ($min_tab_lm==$row["l_mieszkancow"]) {
+                                      $min_lm=$row["cena_m2"];
+                                  }
+                              
+                            // $tab_m2[$rows]=$row["cena_m2"];
+                            // $tab_lm[$rows]=$row["l_mieszkancow"];
+                            // $rows++;
+                            
+                            // $xy[$rows]=$row["cena_m2"]*$row["l_mieszkancow"];
+                            // $x2[$rows]=pow($row["cena_m2"], 2);
+                            // $y2[$rows]=pow($row["l_mieszkancow"], 2);
+                          }; 
+
+                          foreach($data as $row)  
+                          {  
+                             
+                              
+                              $Ex_m2+=$row["cena_m2"];
+                              $Ex_lm+=$row["l_mieszkancow"];
+                              
+
+                          };
+
+                          $Ex_m2=$Ex_m2/$rows;
+                            $Ex_lm=$Ex_lm/$rows;
+                          
+
+                          if ($rows % 2 ==1) {
+                            $mediana_m2=$tab_m2[$rows/2]; 
+                          }
+                          elseif ($rows % 2 ==0) {
+                            $mediana_m2=($tab_m2[$rows/2]+$tab_m2[$rows/2+1])/2;
+                          }
+                          if ($rows % 2 ==1) {
+                            $mediana_lm=$tab_lm[$rows/2]; 
+                          }
+                          elseif ($rows % 2 ==0) {
+                            $mediana_lm=($tab_lm[$rows/2]+$tab_lm[$rows/2+1])/2;
+                          }
+
+
+                          if (is_int($rows*0.75) == true) {
+                            if (($rows*0.75)%2==1) {
+                              $q3_m2=$tab_m2[$rows*0.75];
+                              $q3_lm=$tab_lm[$rows*0.75];
+                            }
+                            else
+                            {
+                              $q3_m2=(($tab_m2[round($rows*0.75, 0, PHP_ROUND_HALF_DOWN)])+($tab_m2[round($rows*0.75, 0, PHP_ROUND_HALF_DOWN)+1]))/2;
+                              $q3_lm=(($tab_lm[round($rows*0.75, 0, PHP_ROUND_HALF_DOWN)])+($tab_lm[round($rows*0.75, 0, PHP_ROUND_HALF_DOWN)+1]))/2;
+                            }
+                            
+                          }
+                           if (is_int($rows*0.75) == false) {
+                            $q3_m2=(($tab_m2[round($rows*0.75, 0, PHP_ROUND_HALF_DOWN)])+($tab_m2[round($rows*0.75, 0, PHP_ROUND_HALF_DOWN)+1]))/2;
+                            $q3_lm=(($tab_lm[round($rows*0.75, 0, PHP_ROUND_HALF_DOWN)])+($tab_lm[round($rows*0.75, 0, PHP_ROUND_HALF_DOWN)+1]))/2;
+                           }
+
+                           if (is_int($rows*0.25) == true) {
+                            if (($rows*0.25)%2==1) {
+                              $q1_m2=$tab_m2[$rows*0.25];
+                              $q1_lm=$tab_lm[$rows*0.25];
+                            }
+                            else
+                            {
+                              $q1_m2=(($tab_m2[round($rows*0.25, 0, PHP_ROUND_HALF_DOWN)])+($tab_m2[round($rows*0.25, 0, PHP_ROUND_HALF_DOWN)+1]))/2;
+                              $q1_lm=(($tab_lm[round($rows*0.25, 0, PHP_ROUND_HALF_DOWN)])+($tab_lm[round($rows*0.25, 0, PHP_ROUND_HALF_DOWN)+1]))/2;
+                            }
+                          }
+                           if (is_int($rows*0.25) == false) {
+                            $q1_m2=(($tab_m2[round($rows*0.25, 0, PHP_ROUND_HALF_DOWN)])+($tab_m2[round($rows*0.25, 0, PHP_ROUND_HALF_DOWN)+1]))/2;
+                            $q1_lm=(($tab_lm[round($rows*0.25, 0, PHP_ROUND_HALF_DOWN)])+($tab_lm[round($rows*0.25, 0, PHP_ROUND_HALF_DOWN)+1]))/2;
+                           }
+
+                            
+                          
+
+
+                          foreach($data as $row)  
+                          { 
+                              $s_m2_tmp+=pow($row["cena_m2"]-$Ex_m2, 2);
+                              $s_lm_tmp+=pow($row["l_mieszkancow"]-$Ex_lm, 2);
+                              $sum_pow_y+=pow($row["l_mieszkancow"],2);
+                          };
+                        $s_m2=round(sqrt($s_m2_tmp/$rows), 2);
+                        $s_lm=round(sqrt($s_lm_tmp/$rows), 2);
+
+
+                        $sumx=array_sum($tab_m2);
+                        $sumy=array_sum($tab_lm);
+                        $sumxy=array_sum($xy);
+                        $sumx2=array_sum($x2);
+                        $sumy2=array_sum($y2);
+
+                        $pearson2=($rows*$sumxy-$sumx*$sumy/sqrt(($rows*$sumx2-pow($sumx, 2))*($rows*$sumy2-pow($sumy, 2))));
+                        $pearson=round(($rows*$sumxy-$sumx*$sumy)/(sqrt(($rows*$sumx2-pow($sumx, 2))*($rows*$sumy2-pow($sumy, 2)))), 2);
+
+                       // $regression_b=round(($rows*$sumxy-$sumx*$sumy)/($rows*$sumx2-pow($sumx, 2)), 2);
+                        $regression_y=$sumy/$rows;
+                        $regression_x=$sumx/$rows;
+                        //$regression_a=round($regression_y-($regression_b*$regression_x), 2);
+                        $regression_a=round(($rows*$sumxy-$sumy*$sumx)/($rows*$sum_pow_y-pow($sumy,2)),2);
+                        $regression_b=round((1/$rows)*($sumx-$regression_a*$sumy),2);
+
+                        $iqr_m2=$q3_m2-$q1_m2;
+                        $iqr_lm=$q3_lm-$q1_lm;
+?>
